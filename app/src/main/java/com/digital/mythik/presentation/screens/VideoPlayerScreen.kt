@@ -3,6 +3,8 @@ package com.digital.mythik.presentation.screens
 import android.app.Activity
 import android.content.pm.ActivityInfo
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -11,8 +13,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Fullscreen
+import androidx.compose.material.icons.filled.FullscreenExit
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -25,7 +31,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
@@ -116,24 +124,37 @@ fun VideoPlayerScreen(
                 )
             )
         }
-
-        // Video player
-        AndroidView(
-            factory = { context ->
-                PlayerView(context).apply {
-                    player = exoPlayer
-                    useController = true
-                    setShowNextButton(false)
-                    setShowPreviousButton(false)
-                    setFullscreenButtonClickListener {
+        Box {
+            // Video player
+            AndroidView(
+                factory = { context ->
+                    PlayerView(context).apply {
+                        player = exoPlayer
+                        useController = true
+                        setShowNextButton(false)
+                        setShowPreviousButton(false)
+                    }
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .then(if (isFullscreen) Modifier.fillMaxSize() else Modifier.aspectRatio(16f / 9f))
+            )
+            Icon(
+                imageVector = if (isFullscreen) Icons.Default.FullscreenExit else Icons.Default.Fullscreen,
+                contentDescription = "Fullscreen",
+                tint = Color.White,
+                modifier = Modifier
+                    .padding(top = if (isFullscreen) 8.dp else 4.dp, end = if (isFullscreen) 8.dp else 4.dp)
+                    .align(Alignment.TopEnd)
+                    .size(34.dp)
+                    .clip(CircleShape)
+                    .background(Color.Black)
+                    .padding(4.dp)
+                    .clickable {
                         isFullscreen = !isFullscreen
                     }
-                }
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .then(if (isFullscreen) Modifier.fillMaxSize() else Modifier.aspectRatio(16f / 9f))
-        )
+            )
+        }
 
         // Only show video details in portrait mode
         if (!isFullscreen) {
