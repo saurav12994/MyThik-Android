@@ -20,6 +20,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -32,6 +33,12 @@ import com.digital.mythik.presentation.components.VideoCarousel
 import com.digital.mythik.presentation.components.VideoListItem
 import com.digital.mythik.presentation.viewmodels.HomeViewModel
 
+// Test tags for semantic testing
+const val TAG_LOADING_INDICATOR = "loading_indicator"
+const val TAG_ERROR_CONTAINER = "error_container"
+const val TAG_RETRY_BUTTON = "retry_button"
+const val TAG_VIDEO_LIST = "video_list"
+const val TAG_TOP_BAR = "top_bar"
 
 @Composable
 fun HomeScreen(
@@ -40,10 +47,13 @@ fun HomeScreen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     Scaffold(topBar = {
-        Row(Modifier
-            .padding(top = 10.dp)
-            .fillMaxWidth()
-            .shadow(elevation = 30.dp)) {
+        Row(
+            Modifier
+                .padding(top = 10.dp)
+                .fillMaxWidth()
+                .shadow(elevation = 30.dp)
+                .testTag(TAG_TOP_BAR)
+        ) {
             Text(
                 text = stringResource(R.string.app_name),
                 color = Color.Black,
@@ -52,7 +62,6 @@ fun HomeScreen(
                 modifier = Modifier.padding(16.dp)
             )
         }
-
     }) {
         Column(
             modifier = Modifier
@@ -63,7 +72,9 @@ fun HomeScreen(
             when {
                 uiState.isLoading -> {
                     Box(
-                        modifier = Modifier.fillMaxSize(),
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .testTag(TAG_LOADING_INDICATOR),
                         contentAlignment = Alignment.Center
                     ) {
                         CircularProgressIndicator(color = Color.Red)
@@ -72,7 +83,9 @@ fun HomeScreen(
 
                 uiState.error != null -> {
                     Box(
-                        modifier = Modifier.fillMaxSize(),
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .testTag(TAG_ERROR_CONTAINER),
                         contentAlignment = Alignment.Center
                     ) {
                         Column(
@@ -85,7 +98,8 @@ fun HomeScreen(
                             )
                             Button(
                                 onClick = { viewModel.retry() },
-                                colors = ButtonDefaults.buttonColors(containerColor = Color.Red)
+                                colors = ButtonDefaults.buttonColors(containerColor = Color.Red),
+                                modifier = Modifier.testTag(TAG_RETRY_BUTTON)
                             ) {
                                 Text(stringResource(R.string.retry), color = Color.White)
                             }
@@ -94,7 +108,9 @@ fun HomeScreen(
                 }
 
                 else -> {
-                    LazyColumn {
+                    LazyColumn(
+                        modifier = Modifier.testTag(TAG_VIDEO_LIST)
+                    ) {
                         // Hero Carousel
                         item {
                             Text(
@@ -131,11 +147,9 @@ fun HomeScreen(
                                 onVideoClick = { onVideoClick(video) }
                             )
                         }
-
                     }
                 }
             }
         }
     }
-
 }
