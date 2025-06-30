@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Mythik</string>
+    <string name="live">LIVE</string>
+    <string name="all_videos">All Videos</string>
+    <string name="top_videos">Top Videos</string>
+    <string name="retry">Retry</string>
+</resources>
